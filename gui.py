@@ -6,13 +6,13 @@ from tkinter.messagebox import askyesno
 from turtle import RawTurtle, TurtleScreen
 from connect4 import create_board, turn, victory
 
-class Connet4Board(TurtleScreen):
+class Connect4Board(TurtleScreen):
     def __init__(self):
         """
         Here will be puppies
         """
         self.canvas = tk.Canvas(cnf={'width':420, 'height':420})
-        super(Connet4Board, self).__init__(self.canvas)
+        super(Connect4Board, self).__init__(self.canvas)
         
         self.slots_positions = [[(x, y) for x in range(-180, 240, 60)] for y in range(120, -210, -60)]
         self.columns = [x for x in range(-180, 240, 60)]
@@ -28,6 +28,7 @@ class Connet4Board(TurtleScreen):
         self.painter.setheading(270)
         self.draw_board()
         self.init_board()
+        self.bind()
 
         self.canvas.master.title("Connect4Game")
         self.canvas.pack()
@@ -64,6 +65,12 @@ class Connet4Board(TurtleScreen):
         self.player.setx(-180)
         self.player.switch_color('red')
 
+    def bind(self):
+        self.listen()
+        self.onkeypress(self.move_right, 'Right')
+        self.onkeypress(self.move_left, 'Left')
+        self.onkeypress(self.slot, 'Return')
+
     def move_right(self):
         self.player.move_right()
         self.update()
@@ -84,7 +91,7 @@ class Connet4Board(TurtleScreen):
             self.player.goto(self.slots_positions[row][column])
             self.player.dot(45)
             self.player.sety(180)
-            if victory(self.backend, (row, column), self.player.c):
+            if victory(self.backend, (row, column), self.player.get_color()):
                 self.player.hideturtle()
                 self.painter.up()
                 self.painter.goto(-180, 150)
@@ -108,17 +115,17 @@ class Player(RawTurtle):
     """
     Here will be bunnies
     """
-    def __init__(self, screen: Connet4Board, color: str):
+    def __init__(self, screen: Connect4Board, color: str):
         super(Player, self).__init__(screen)
         self.screen = screen
-        self.c = color
+        self._color = color
         self.color(color)
         self.shape('circle')
         self.shapesize(2)
         self.up()
 
     def __repr__(self):
-        return self.c.capitalize() + " player"
+        return self._color.capitalize() + " player"
 
     def move_right(self):
         """
@@ -148,21 +155,9 @@ class Player(RawTurtle):
         change the color of the player to color
         :param color: str name of the required color.
         """
-        self.c = color
+        self._color = color
         self.color(color)
 
-
-board: list = [[' ',' ',' ',' ',' ',' ',' '],
-               [' ',' ',' ',' ',' ',' ',' '],
-               [' ',' ',' ',' ',' ',' ',' '],
-               [' ',' ',' ',' ',' ',' ',' '],
-               [' ',' ',' ',' ',' ',' ',' '],
-               [' ',' ',' ',' ',' ',' ',' ']]
-
-c = Connet4Board()
-c.listen()
-c.onkeypress(c.move_right, 'Right')
-c.onkeypress(c.move_left, 'Left')
-c.onkeypress(c.slot, 'Return')
-c.mainloop()
+    def get_color(self):
+        return self._color
 
