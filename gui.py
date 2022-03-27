@@ -1,5 +1,5 @@
 """
-Here will be Dragons
+GUI classes for the connect-4 game
 """
 import tkinter as tk
 from tkinter.messagebox import askyesno
@@ -7,10 +7,10 @@ from turtle import RawTurtle, TurtleScreen
 from connect4 import create_board, turn, victory
 
 class Connect4Board(TurtleScreen):
+    """
+    The main app of the game. currently for 2 human players.
+    """
     def __init__(self):
-        """
-        Here will be puppies
-        """
         self.canvas = tk.Canvas(cnf={'width':420, 'height':420})
         super(Connect4Board, self).__init__(self.canvas)
         
@@ -21,7 +21,6 @@ class Connect4Board(TurtleScreen):
         self.player = Player(self, 'red')
         self.player.goto(-180, 180)
 
-        self.bgcolor("blue")
         self.tracer(False)
         self.painter = RawTurtle(self, visible=False)
         self.painter.color("white")
@@ -35,8 +34,9 @@ class Connect4Board(TurtleScreen):
 
     def draw_board(self):
         """
-        here will be puppies
+        Draw the columns and the player desk
         """
+        self.bgcolor("blue")
         for x in range(-150, 240, 60):
             self.painter.up()
             self.painter.goto(x, 180)
@@ -54,6 +54,9 @@ class Connect4Board(TurtleScreen):
         self.update()
 
     def init_board(self):
+        """
+        Initialize the columns by set the game dots.
+        """
         self.painter.color('white')
         for row in self.slots_positions:
             for (x, y) in row:
@@ -63,6 +66,7 @@ class Connect4Board(TurtleScreen):
                 self.painter.dot(45)
         self.backend = create_board()
         self.player.setx(-180)
+        self.current_play = 0
         self.player.switch_color('red')
 
     def bind(self):
@@ -70,6 +74,7 @@ class Connect4Board(TurtleScreen):
         self.onkeypress(self.move_right, 'Right')
         self.onkeypress(self.move_left, 'Left')
         self.onkeypress(self.slot, 'Return')
+        self.onkeypress(self.slot, 'Down')
 
     def move_right(self):
         self.player.move_right()
@@ -160,4 +165,3 @@ class Player(RawTurtle):
 
     def get_color(self):
         return self._color
-
